@@ -1,8 +1,21 @@
-import express from 'express';
+import express from "express";
+import mongoose from "mongoose";
+import dotenv from 'dotenv'
+
+dotenv.config();
 
 const app = express();
 
-// Your express app configuration and routes go here
+mongoose
+  .connect(
+    process.env.MONGO_CON
+  )
+  .then(() => {
+    console.log("Mongoose Connected");
+  })
+  .catch((err) => {
+    console.log(err);
+  });
 
 const PORT = 3000;
 

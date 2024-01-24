@@ -40,7 +40,7 @@ export default function Header() {
 
         {/* Sing up button */}
         <Link to={"/sign-up"}>
-          <Button className="" gradientDuoTone={"purpleToBlue"} pill>
+          <Button className="" gradientDuoTone={"purpleToBlue"} pill outline>
             Sign Up
           </Button>
         </Link>

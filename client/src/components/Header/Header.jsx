@@ -1,13 +1,27 @@
-import { Avatar, Button, Dropdown, DropdownDivider, DropdownHeader, DropdownItem, Navbar, TextInput } from "flowbite-react";
+import {
+  Avatar,
+  Button,
+  Dropdown,
+  DropdownDivider,
+  DropdownHeader,
+  DropdownItem,
+  Navbar,
+  TextInput,
+} from "flowbite-react";
 import { Link, useLocation } from "react-router-dom";
 import { AiOutlineSearch } from "react-icons/ai";
-import { FaMoon } from "react-icons/fa";
-import {useSelector} from 'react-redux';
+import { FaMoon, FaSun } from "react-icons/fa";
+
+
+import { useSelector, useDispatch } from "react-redux";
+import { toggleTheme } from "../../redux/theme/themeSlice.js";
 
 export default function Header() {
   const path = useLocation().pathname;
-  const {currentUser} = useSelector(state => state.user)
-    return (
+  const { currentUser } = useSelector((state) => state.user);
+  const { theme } = useSelector((state) => state.theme);
+  const dispatch = useDispatch();
+  return (
     <Navbar className="border-b-2">
       <Link
         to={"/"}
@@ -36,54 +50,56 @@ export default function Header() {
 
       <div className="flex gap-2 md:order-2">
         {/* nightmode toggle */}
-        <Button className="w-12 h-10 hidden sm:inline" color="gray" pill>
-          <FaMoon />
+        <Button
+          className="w-12 h-10 hidden sm:inline"
+          color="gray"
+          pill
+          onClick={() => dispatch(toggleTheme())}
+        >
+          {theme === "light" ? <FaMoon  /> : <FaSun /> }
         </Button>
 
-        {
-          currentUser ? (
-            <Dropdown
+        {currentUser ? (
+          <Dropdown
             arrowIcon={false}
             inline
             label={
-              <Avatar
-              alt="user"
-              rounded
-              img={currentUser.profilePicture}
-              />
+              <Avatar alt="user" rounded img={currentUser.profilePicture} />
             }
-            >
-              <DropdownHeader>
-                <span className="block text-sm text-left font-medium truncate">@{currentUser.username}</span>
-                <span className="block text-sm text-left font-thin truncate">{currentUser.email}</span>
-              </DropdownHeader>
-              <Link to={'/dashboard?tab=profile'}>
+          >
+            <DropdownHeader>
+              <span className="block text-sm text-left font-medium truncate">
+                @{currentUser.username}
+              </span>
+              <span className="block text-sm text-left font-thin truncate">
+                {currentUser.email}
+              </span>
+            </DropdownHeader>
+            <Link to={"/dashboard?tab=profile"}>
               <DropdownItem>Profile</DropdownItem>
-              </Link>
-              <DropdownDivider/>
-               <DropdownItem>Log Out</DropdownItem>
-            </Dropdown>
-          ):(
-
-        /* Sing up button */
-        <Link to={"/sign-in"}>
-          <Button className="" gradientDuoTone={"purpleToBlue"} pill outline>
-            Sign In
-          </Button>
-        </Link>
-          )
-        }
+            </Link>
+            <DropdownDivider />
+            <DropdownItem>Log Out</DropdownItem>
+          </Dropdown>
+        ) : (
+          /* Sing up button */
+          <Link to={"/sign-in"}>
+            <Button className="" gradientDuoTone={"purpleToBlue"} pill outline>
+              Sign In
+            </Button>
+          </Link>
+        )}
 
         <Navbar.Toggle />
       </div>
       <Navbar.Collapse>
-        <Navbar.Link active={path =='/'} as={"div"}>
+        <Navbar.Link active={path == "/"} as={"div"}>
           <Link to={"/"}>Home</Link>
         </Navbar.Link>
-        <Navbar.Link active={path =='/about'} as={"div"}>
+        <Navbar.Link active={path == "/about"} as={"div"}>
           <Link to={"/about"}>About</Link>
         </Navbar.Link>
-        <Navbar.Link active={path =='/projects'} as={"div"}>
+        <Navbar.Link active={path == "/projects"} as={"div"}>
           <Link to={"/projects"}>Projects</Link>
         </Navbar.Link>
       </Navbar.Collapse>

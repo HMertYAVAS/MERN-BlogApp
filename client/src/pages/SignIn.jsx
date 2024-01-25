@@ -11,11 +11,10 @@ export default function SignIp() {
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.id]: e.target.value.trim() });
   };
-  console.log(formData);
-
+/*   console.log(formData); */
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!formData.username || !formData.email || !formData.password) {
+    if (!formData.username || !formData.password) {
       return setErrorMessage("Please fill out all fields");
     }
     try {
@@ -32,7 +31,7 @@ export default function SignIp() {
       }
       setLoading(false)
       if(res.ok){
-        navigate('/sign-in')
+        navigate('/')
       }
     } catch (error) {
       setErrorMessage(error.message)
@@ -89,14 +88,14 @@ export default function SignIp() {
                   <Spinner size={'sm'} />
                   <span className="pl-3">Loading...</span>  
                   </>
-                  ):"Submit"
+                  ):"Sign In"
               }
               
             </Button>
             <div>
-              <span className="mr-3">Did you have a account?</span>
+              <span className="mr-3">Dont you have a account?</span>
               <Link
-                to={"/sign-in"}
+                to={"/sign-up"}
                 className="text-blue-600 font-semibold text-sm"
               >
 

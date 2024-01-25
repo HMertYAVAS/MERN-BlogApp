@@ -6,6 +6,7 @@ import Dashboard from "./pages/Dashboard"
 import SignIn from "./pages/SignIn"
 import SignUp from "./pages/SignUp"
 import Header from "./components/Header/Header";
+import FooterComp from "./components/Footer/FooterComp";
 
 export default function App() {
   return (
@@ -21,6 +22,7 @@ export default function App() {
 
 
       </Routes>
+      <FooterComp />
     </BrowserRouter>
   );
 }

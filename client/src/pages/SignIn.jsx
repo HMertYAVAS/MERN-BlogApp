@@ -1,41 +1,44 @@
 import { Alert, Button, Label, Spinner, TextInput } from "flowbite-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
-
+import { useDispatch, useSelector } from "react-redux";
+import {
+  signInStart,
+  signInSuccess,
+  signInFailure,
+} from "../redux/user/userSlice";
 
 export default function SignIp() {
   const [formData, setFormData] = useState({});
-  const [errorMessage, setErrorMessage] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const dispatch = useDispatch();
+  const { loading, error: errorMessage } = useSelector((state) => state.user);
   const navigate = useNavigate();
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.id]: e.target.value.trim() });
   };
-/*   console.log(formData); */
+  /*   console.log(formData); */
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formData.username || !formData.password) {
-      return setErrorMessage("Please fill out all fields");
+      return dispatch(signInFailure("Please fill all the fields"));
     }
     try {
-      setLoading(true)
-      setErrorMessage(null)
+      dispatch(signInStart());
       const res = await fetch("/api/signin", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
       const data = await res.json();
-      if(data.success === false){
-        return setErrorMessage(data.message)
+      if (data.success === false) {
+        dispatch(signInFailure(data.message));
       }
-      setLoading(false)
-      if(res.ok){
-        navigate('/')
+      if (res.ok) {
+        dispatch(signInSuccess(data));
+        navigate("/");
       }
     } catch (error) {
-      setErrorMessage(error.message)
-      setLoading(false)
+      dispatch(signInFailure(error.message));
     }
   };
 
@@ -61,7 +64,10 @@ export default function SignIp() {
         <div className="flex-1">
           {" "}
           {/* Added mx-auto to center the content horizontally */}
-          <form className="flex flex-col md:max-w-full max-w-screen-2xl gap-4" onSubmit={handleSubmit}>
+          <form
+            className="flex flex-col md:max-w-full max-w-screen-2xl gap-4"
+            onSubmit={handleSubmit}
+          >
             <div>
               <label>Username:</label>
               <TextInput
@@ -80,17 +86,19 @@ export default function SignIp() {
                 onChange={handleChange}
               />
             </div>
-            <Button type="submit" gradientDuoTone={"purpleToBlue"} disabled={loading} >
-              {
-                loading ?
-                (
-                  <>
-                  <Spinner size={'sm'} />
-                  <span className="pl-3">Loading...</span>  
-                  </>
-                  ):"Sign In"
-              }
-              
+            <Button
+              type="submit"
+              gradientDuoTone={"purpleToBlue"}
+              disabled={loading}
+            >
+              {loading ? (
+                <>
+                  <Spinner size={"sm"} />
+                  <span className="pl-3">Loading...</span>
+                </>
+              ) : (
+                "Sign In"
+              )}
             </Button>
             <div>
               <span className="mr-3">Dont you have a account?</span>
@@ -98,14 +106,13 @@ export default function SignIp() {
                 to={"/sign-up"}
                 className="text-blue-600 font-semibold text-sm"
               >
-
                 Sign Up
               </Link>
-            {errorMessage && 
-            <Alert className="mt-5" color={'failure'}>
-              {errorMessage}
-            </Alert>
-            }
+              {errorMessage && (
+                <Alert className="mt-5" color={"failure"}>
+                  {errorMessage}
+                </Alert>
+              )}
             </div>
           </form>
         </div>

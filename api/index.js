@@ -31,7 +31,7 @@ app.listen(PORT, () => {
 app.use(express.json());
 
 app.use('/testAPI',userRoutes);
-app.use('/testAPI',signupRoutes);
+app.use('/api',signupRoutes);
 
 
 app.use((err,req,res,next)=>{

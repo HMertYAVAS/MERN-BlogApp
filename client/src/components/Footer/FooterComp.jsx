@@ -4,10 +4,10 @@ import {FaFacebook,FaTwitter,FaYoutube,FaInstagram,FaTiktok} from "react-icons/f
 
 export default function FooterComp() {
   return (
-    <Footer container className="border border-t-8 border-teal-500">
+    <Footer container className="border border-t-4 border-teal-500 ">
       <div className="w-full w-max-7xl mx-auto ">
         <div className="grid w-full justify-between sm:flex md:grid-cols-1">
-          <div className="mb-5">
+          <div className="mt-5">
             <Link
               to={"/"}
               className="self-center whitespace-nowrap text-lg sm:text-3xl font-semibold dark:text-white"
@@ -18,7 +18,7 @@ export default function FooterComp() {
               Blog
             </Link>
           </div>
-          <div className="grid grid-cols-2 gap-3 sm:mt-4 sm:grid-cols-3 sm:gap-6">
+          <div className="grid grid-cols-2 gap-8 mt-4 sm:grid-cols-3 sm:gap-6">
             <div>
               <Footer.Title title="About" />
               <Footer.LinkGroup col>

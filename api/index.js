@@ -2,8 +2,8 @@ import express from "express";
 import mongoose from "mongoose";
 import dotenv from 'dotenv'
 import userRoutes from './routes/user.route.js'
-import signupRoutes from './routes/auth.route.js'
-import { error } from "console";
+import authRoutes from './routes/auth.route.js'
+import cookieParser from "cookie-parser";
 
 
 dotenv.config();
@@ -29,9 +29,10 @@ app.listen(PORT, () => {
 });
 
 app.use(express.json());
+app.use(cookieParser());
 
-app.use('/testAPI',userRoutes);
-app.use('/api',signupRoutes);
+app.use('/api/user',userRoutes);
+app.use('/api/auth',authRoutes);
 
 
 app.use((err,req,res,next)=>{

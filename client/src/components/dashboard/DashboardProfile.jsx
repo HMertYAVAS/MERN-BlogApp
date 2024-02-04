@@ -1,5 +1,5 @@
-import React, { useEffect, useRef, useState } from "react";
-import { useSelector } from "react-redux";
+import { useEffect, useRef, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { Alert, Button, TextInput } from "flowbite-react";
 import { HiMail, HiUser, HiLockClosed, HiPencil } from "react-icons/hi";
 import {
@@ -11,22 +11,71 @@ import {
 import { app } from "../../firebase";
 import { CircularProgressbar } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
+import {
+  updateStart,
+  updateSuccess,
+  updateFailure,
+} from "../../redux/user/userSlice";
+import { set } from "mongoose";
 
 export default function DashboardProfile() {
   const { currentUser } = useSelector((state) => state.user);
   const [usernameDis, setUsernameDis] = useState(true);
   const [emailDis, setEmailDis] = useState(true);
   const [passwordDis, setPasswordDis] = useState(true);
+  const [formData, setFormData] = useState({});
+  const [updateUserError, setUpdateUserError] = useState(null);
+  const [updateUserSuccess, setUpdateUserSuccess] = useState(null);
   const [imageFile, setImageFile] = useState(null);
   const [imageFileUrl, setImageFileUrl] = useState(null);
+  const [imageFileUploading, setimageFileUploading] = useState(false);
   const [imageFileUploadProgress, setImageFileUploadProgress] = useState(null);
   const [imageFileUploadError, setImageFileUploadError] = useState(null);
   const filePickerRef = useRef();
+  const dispatch = useDispatch();
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) setImageFile(file);
     setImageFileUrl(URL.createObjectURL(file));
+  };
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.id]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setUpdateUserError(null);
+    setUpdateUserSuccess(null);
+    if (Object.keys(formData).length === 0) {
+      setUpdateUserError("No changes made");
+      return;
+    }
+    if (imageFileUploading) {
+      setUpdateUserError("Please wait for image to upload");
+      return;
+    }
+    try {
+      dispatch(updateStart());
+      const res = await fetch(`/api/user/update/${currentUser._id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        dispatch(updateFailure(data.message));
+        setUpdateUserError(data.message);
+      } else {
+        dispatch(updateSuccess(data));
+        setUpdateUserSuccess("User profile updated successfully");
+      }
+    } catch (error) {
+      dispatch(updateFailure(error.message));
+    }
   };
 
   useEffect(() => {
@@ -45,7 +94,8 @@ export default function DashboardProfile() {
             request.resource.contentType.matches('image/.*')
           }
         } */
-    setImageFileUploadError(null)
+    setimageFileUploading(true);
+    setImageFileUploadError(null);
     const storage = getStorage(app);
     const fileName = new Date().getTime() + imageFile.name;
     const storageRef = ref(storage, fileName);
@@ -62,23 +112,25 @@ export default function DashboardProfile() {
         setImageFileUploadError(
           "Could not upload image (File must be less 2MB)"
         );
-        setImageFileUploadProgress(null)
-        setImageFile(null)
-        setImageFileUrl(null)
+        setimageFileUploading(false);
+        setImageFileUploadProgress(null);
+        setImageFile(null);
+        setImageFileUrl(null);
       },
       () => {
         getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+          setimageFileUploading(false);
           setImageFileUrl(downloadURL);
+          setFormData({ ...formData, profilePicture: downloadURL });
         });
       }
     );
   };
 
-  console.log(imageFileUploadError, imageFileUploadProgress);
   return (
     <div className="max-w-lg mx-auto p-3 w-full">
       <h1 className="my-5 text-center font-semibold text-3xl">Profile</h1>
-      <form className="flex flex-col gap-4" action="">
+      <form className="flex flex-col gap-4" action="" onSubmit={handleSubmit}>
         <input
           type="file"
           accept="image/*"
@@ -98,9 +150,9 @@ export default function DashboardProfile() {
               strokeWidth={5}
               styles={{
                 root: {
-                  width: '100%',
-                  height: '100%',
-                  position: 'absolute',
+                  width: "100%",
+                  height: "100%",
+                  position: "absolute",
                   top: 0,
                   left: 0,
                 },
@@ -116,14 +168,14 @@ export default function DashboardProfile() {
             src={
               currentUser.profilePicture ||
               imageFileUrl ||
-              "https://images.pexels.com/photos/9496595/pexels-photo-9496595.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
+              "https://images.pexels.com/photos/262508/pexels-photo-262508.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
             }
             alt="photo"
             className={`rounded-full w-full h-full object-cover border-8 border-[lightgray] ${
-                imageFileUploadProgress &&
-                imageFileUploadProgress < 100 &&
-                'opacity-60'
-              }`}
+              imageFileUploadProgress &&
+              imageFileUploadProgress < 100 &&
+              "opacity-60"
+            }`}
           />
         </div>
         {imageFileUploadError && (
@@ -140,6 +192,7 @@ export default function DashboardProfile() {
             defaultValue={currentUser.username}
             className="col-span-9"
             disabled={usernameDis}
+            onChange={handleChange}
           />
           <Button
             className="col-span-1 ml-1"
@@ -157,6 +210,7 @@ export default function DashboardProfile() {
             defaultValue={currentUser.email}
             className="col-span-9"
             disabled={emailDis}
+            onChange={handleChange}
           />
           <Button
             className="col-span-1 ml-1"
@@ -173,6 +227,7 @@ export default function DashboardProfile() {
             icon={HiLockClosed}
             className="col-span-9"
             disabled={passwordDis}
+            onChange={handleChange}
           />
           <Button
             className="col-span-1 ml-1"
@@ -182,13 +237,23 @@ export default function DashboardProfile() {
           </Button>
         </div>
 
-        <Button gradientDuoTone="purpleToBlue" outline>
+        <Button gradientDuoTone="purpleToBlue" outline type="submit">
           Update
         </Button>
         <div className="flex justify-between text-red-500">
           <span>Delete User</span>
           <span>Log out</span>
         </div>
+        {updateUserSuccess && (
+          <Alert color={"success"} className="mt-5">
+            {updateUserSuccess}
+          </Alert>
+        )}
+        {updateUserError && (
+          <Alert color={"failure"} className="mt-5">
+            {updateUserError}
+          </Alert>
+        )}
       </form>
     </div>
   );

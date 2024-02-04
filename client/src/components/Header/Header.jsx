@@ -64,7 +64,7 @@ export default function Header() {
             arrowIcon={false}
             inline
             label={
-              <Avatar alt="user" rounded img={currentUser.profilePicture} />
+              <Avatar alt="user" rounded img={currentUser.profilePicture || "https://images.pexels.com/photos/262508/pexels-photo-262508.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"} />
             }
           >
             <DropdownHeader>

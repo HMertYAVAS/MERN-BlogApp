@@ -212,9 +212,8 @@ export default function DashboardProfile() {
           )}
           <img
             src={
-              currentUser.profilePicture ||
               imageFileUrl ||
-              "https://images.pexels.com/photos/262508/pexels-photo-262508.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
+              currentUser.profilePicture
             }
             alt="photo"
             className={`rounded-full w-full h-full object-cover border-8 border-[lightgray] ${

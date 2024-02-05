@@ -5,7 +5,7 @@ import { errorHandler } from "../utils/error.js";
 import jwt from "jsonwebtoken";
 
 export const signup = async (req, res, next) => {
-  const { username, email, password,profilePicture } = req.body;
+  const { username, email, password } = req.body;
 
   if (
     !username ||
@@ -24,7 +24,7 @@ export const signup = async (req, res, next) => {
     username,
     email,
     password: hashedPassword,
-    profilePicture
+    
   });
 
   try {
@@ -53,7 +53,7 @@ export const signin = async (req, res, next) => {
       return next(errorHandler(404, "Invalid password"));
     }
 
-    const token = jwt.sign({ id: validUser._id }, process.env.JWT_SECRET);
+    const token = jwt.sign({ id: validUser._id, isAdmin: validUser.isAdmin }, process.env.JWT_SECRET);
     const {password : pass,...rest} = validUser._doc;
     res
       .status(200)

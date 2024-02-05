@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Alert, Button, TextInput } from "flowbite-react";
-import { HiMail, HiUser, HiLockClosed, HiPencil } from "react-icons/hi";
+import { Alert, Button, Modal, TextInput } from "flowbite-react";
+import { HiMail, HiUser, HiLockClosed, HiPencil, HiOutlineExclamation, HiOutlineExclamationCircle } from "react-icons/hi";
 import {
   getDownloadURL,
   getStorage,
@@ -15,15 +15,19 @@ import {
   updateStart,
   updateSuccess,
   updateFailure,
+  deleteUserStart,
+  deleteUserFailure,
+  deleteUserSuccess
 } from "../../redux/user/userSlice";
 import { set } from "mongoose";
 
 export default function DashboardProfile() {
-  const { currentUser } = useSelector((state) => state.user);
+  const { currentUser,error } = useSelector((state) => state.user);
   const [usernameDis, setUsernameDis] = useState(true);
   const [emailDis, setEmailDis] = useState(true);
   const [passwordDis, setPasswordDis] = useState(true);
   const [formData, setFormData] = useState({});
+  const [showModal,setShowModal] = useState(false)
   const [updateUserError, setUpdateUserError] = useState(null);
   const [updateUserSuccess, setUpdateUserSuccess] = useState(null);
   const [imageFile, setImageFile] = useState(null);
@@ -75,6 +79,24 @@ export default function DashboardProfile() {
       }
     } catch (error) {
       dispatch(updateFailure(error.message));
+    }
+  };
+
+  const handleDeleteUser = async () => {
+    setShowModal(false);
+    try {
+      dispatch(deleteUserStart());
+      const res = await fetch(`/api/user/delete/${currentUser._id}`, {
+        method: 'DELETE',
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        dispatch(deleteUserFailure(data.message));
+      } else {
+        dispatch(deleteUserSuccess(data));
+      }
+    } catch (error) {
+      dispatch(deleteUserFailure(error.message));
     }
   };
 
@@ -241,7 +263,7 @@ export default function DashboardProfile() {
           Update
         </Button>
         <div className="flex justify-between text-red-500">
-          <span>Delete User</span>
+          <span onClick={() => setShowModal(true)}>Delete User</span>
           <span>Log out</span>
         </div>
         {updateUserSuccess && (
@@ -254,7 +276,27 @@ export default function DashboardProfile() {
             {updateUserError}
           </Alert>
         )}
+        {error && (
+          <Alert color={"failure"} className="mt-5">
+            {error}
+          </Alert>
+        )}
       </form>
+      <Modal show={showModal} onClose={() => setShowModal(false)} popup size='md'>
+        <Modal.Header/>
+        <Modal.Body>
+          <div className="text-center">
+            <HiOutlineExclamationCircle className="h-14 w-14 text-gray-400 dark:text-gray-200 mb-4 mx-auto"/>
+            <h3 className="mb-5 text-lg text-gray-500 dark:text-gray-400" > Do you want delete your account?</h3>
+            <div className="flex justify-center gap-5">
+            <Button className="" color="failure" onClick={handleDeleteUser}>Delete</Button> 
+            <Button className="" color="gray" onClick={() => setShowModal(false)}>Cancel</Button> 
+            </div>
+
+          </div>
+        </Modal.Body>
+
+      </Modal>
     </div>
   );
 }

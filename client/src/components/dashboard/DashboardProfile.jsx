@@ -1,7 +1,14 @@
 import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Alert, Button, Modal, TextInput } from "flowbite-react";
-import { HiMail, HiUser, HiLockClosed, HiPencil, HiOutlineExclamation, HiOutlineExclamationCircle } from "react-icons/hi";
+import {
+  HiMail,
+  HiUser,
+  HiLockClosed,
+  HiPencil,
+  HiOutlineExclamation,
+  HiOutlineExclamationCircle,
+} from "react-icons/hi";
 import {
   getDownloadURL,
   getStorage,
@@ -17,17 +24,18 @@ import {
   updateFailure,
   deleteUserStart,
   deleteUserFailure,
-  deleteUserSuccess
+  deleteUserSuccess,
+  signoutSuccess
 } from "../../redux/user/userSlice";
 import { set } from "mongoose";
 
 export default function DashboardProfile() {
-  const { currentUser,error } = useSelector((state) => state.user);
+  const { currentUser, error } = useSelector((state) => state.user);
   const [usernameDis, setUsernameDis] = useState(true);
   const [emailDis, setEmailDis] = useState(true);
   const [passwordDis, setPasswordDis] = useState(true);
   const [formData, setFormData] = useState({});
-  const [showModal,setShowModal] = useState(false)
+  const [showModal, setShowModal] = useState(false);
   const [updateUserError, setUpdateUserError] = useState(null);
   const [updateUserSuccess, setUpdateUserSuccess] = useState(null);
   const [imageFile, setImageFile] = useState(null);
@@ -87,7 +95,7 @@ export default function DashboardProfile() {
     try {
       dispatch(deleteUserStart());
       const res = await fetch(`/api/user/delete/${currentUser._id}`, {
-        method: 'DELETE',
+        method: "DELETE",
       });
       const data = await res.json();
       if (!res.ok) {
@@ -97,6 +105,22 @@ export default function DashboardProfile() {
       }
     } catch (error) {
       dispatch(deleteUserFailure(error.message));
+    }
+  };
+
+  const handleLogout = async () => {
+    try {
+      const res = await fetch('api/user/signout',{
+        method:'POST',
+      })
+      const data = await res.json()
+      if(!res.ok){
+        console.log(data.message)
+      }else{
+        dispatch(signoutSuccess())
+      }
+    } catch (error) {
+      console.log(error)
     }
   };
 
@@ -264,7 +288,7 @@ export default function DashboardProfile() {
         </Button>
         <div className="flex justify-between text-red-500">
           <span onClick={() => setShowModal(true)}>Delete User</span>
-          <span>Log out</span>
+          <span onClick={handleLogout}>Log out</span>
         </div>
         {updateUserSuccess && (
           <Alert color={"success"} className="mt-5">
@@ -282,20 +306,34 @@ export default function DashboardProfile() {
           </Alert>
         )}
       </form>
-      <Modal show={showModal} onClose={() => setShowModal(false)} popup size='md'>
-        <Modal.Header/>
+      <Modal
+        show={showModal}
+        onClose={() => setShowModal(false)}
+        popup
+        size="md"
+      >
+        <Modal.Header />
         <Modal.Body>
           <div className="text-center">
-            <HiOutlineExclamationCircle className="h-14 w-14 text-gray-400 dark:text-gray-200 mb-4 mx-auto"/>
-            <h3 className="mb-5 text-lg text-gray-500 dark:text-gray-400" > Do you want delete your account?</h3>
+            <HiOutlineExclamationCircle className="h-14 w-14 text-gray-400 dark:text-gray-200 mb-4 mx-auto" />
+            <h3 className="mb-5 text-lg text-gray-500 dark:text-gray-400">
+              {" "}
+              Do you want delete your account?
+            </h3>
             <div className="flex justify-center gap-5">
-            <Button className="" color="failure" onClick={handleDeleteUser}>Delete</Button> 
-            <Button className="" color="gray" onClick={() => setShowModal(false)}>Cancel</Button> 
+              <Button className="" color="failure" onClick={handleDeleteUser}>
+                Delete
+              </Button>
+              <Button
+                className=""
+                color="gray"
+                onClick={() => setShowModal(false)}
+              >
+                Cancel
+              </Button>
             </div>
-
           </div>
         </Modal.Body>
-
       </Modal>
     </div>
   );

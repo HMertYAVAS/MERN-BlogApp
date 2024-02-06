@@ -25,12 +25,13 @@ import {
   deleteUserStart,
   deleteUserFailure,
   deleteUserSuccess,
-  signoutSuccess
+  signoutSuccess,
 } from "../../redux/user/userSlice";
 import { set } from "mongoose";
+import { Link } from "react-router-dom";
 
 export default function DashboardProfile() {
-  const { currentUser, error } = useSelector((state) => state.user);
+  const { currentUser, error, loading } = useSelector((state) => state.user);
   const [usernameDis, setUsernameDis] = useState(true);
   const [emailDis, setEmailDis] = useState(true);
   const [passwordDis, setPasswordDis] = useState(true);
@@ -110,17 +111,17 @@ export default function DashboardProfile() {
 
   const handleLogout = async () => {
     try {
-      const res = await fetch('api/user/signout',{
-        method:'POST',
-      })
-      const data = await res.json()
-      if(!res.ok){
-        console.log(data.message)
-      }else{
-        dispatch(signoutSuccess())
+      const res = await fetch("api/user/signout", {
+        method: "POST",
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        console.log(data.message);
+      } else {
+        dispatch(signoutSuccess());
       }
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
   };
 
@@ -211,10 +212,7 @@ export default function DashboardProfile() {
             />
           )}
           <img
-            src={
-              imageFileUrl ||
-              currentUser.profilePicture
-            }
+            src={imageFileUrl || currentUser.profilePicture}
             alt="photo"
             className={`rounded-full w-full h-full object-cover border-8 border-[lightgray] ${
               imageFileUploadProgress &&
@@ -240,7 +238,7 @@ export default function DashboardProfile() {
             onChange={handleChange}
           />
           <Button
-            className="col-span-1 ml-1"
+            className="col-span-1 ml-1 bg-teal-300"
             onClick={() => setUsernameDis(!usernameDis)}
           >
             <HiPencil />
@@ -258,7 +256,7 @@ export default function DashboardProfile() {
             onChange={handleChange}
           />
           <Button
-            className="col-span-1 ml-1"
+            className="col-span-1 ml-1 bg-teal-300"
             onClick={() => setEmailDis(!emailDis)}
           >
             <HiPencil />
@@ -275,19 +273,34 @@ export default function DashboardProfile() {
             onChange={handleChange}
           />
           <Button
-            className="col-span-1 ml-1"
+            className="col-span-1 ml-1 bg-teal-300"
             onClick={() => setPasswordDis(!passwordDis)}
           >
             <HiPencil />
           </Button>
         </div>
 
-        <Button gradientDuoTone="purpleToBlue" outline type="submit">
-          Update
+        <Button gradientDuoTone="purpleToBlue" outline type="submit" disabled={loading || imageFileUploading}>
+          {loading ? 'Loading' : 'Update'}
         </Button>
+        {currentUser.isAdmin && (
+          <Link to={"/create-post"}>
+            <Button
+              type="button"
+              gradientDuoTone="tealToLime"
+              className={"w-full"}
+            >
+              Create Post
+            </Button>
+          </Link>
+        )}
         <div className="flex justify-between text-red-500">
-          <span onClick={() => setShowModal(true)}>Delete User</span>
-          <span onClick={handleLogout}>Log out</span>
+          <span onClick={() => setShowModal(true)} className="cursor-pointer">
+            Delete User
+          </span>
+          <span onClick={handleLogout} className="cursor-pointer">
+            Log out
+          </span>
         </div>
         {updateUserSuccess && (
           <Alert color={"success"} className="mt-5">

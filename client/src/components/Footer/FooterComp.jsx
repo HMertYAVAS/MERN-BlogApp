@@ -4,7 +4,7 @@ import {FaFacebook,FaTwitter,FaYoutube,FaInstagram,FaTiktok} from "react-icons/f
 
 export default function FooterComp() {
   return (
-    <Footer container className="border border-t-4 border-teal-500 ">
+    <Footer container className="border border-t-4 border-orange-400 ">
       <div className="w-full w-max-7xl mx-auto ">
         <div className="grid w-full justify-between sm:flex md:grid-cols-1">
           <div className="mt-5">

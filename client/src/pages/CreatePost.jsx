@@ -17,7 +17,7 @@ export default function CreatePost() {
             </Select>
         </div>
         <div className="flex gap-4 items-center justify-between border-2 border-orange-400 p-3">
-            <FileInput type='file' accept="image/*" required/>
+            <FileInput type='file' accept="image/*" />
             <Button type="button" className="bg-gradient-to-r from-red-600 via-orange-400 to-yellow-300" size={'sm'} outline>Upload Photo</Button>
 
         </div>

@@ -142,10 +142,10 @@ export default function DashboardUsers() {
             </h3>
             <div className='flex justify-center gap-4'>
               <Button color='failure' onClick={handleDeleteUser}>
-                Yes, I'm sure
+                Delete
               </Button>
               <Button color='gray' onClick={() => setShowModal(false)}>
-                No, cancel
+                Cancel
               </Button>
             </div>
           </div>

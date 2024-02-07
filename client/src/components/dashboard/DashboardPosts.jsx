@@ -1,5 +1,6 @@
-import { Table } from "flowbite-react";
+import { Button, Modal, Table } from "flowbite-react";
 import { useEffect, useState } from "react";
+import { HiOutlineExclamationCircle } from "react-icons/hi";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 
@@ -7,6 +8,8 @@ export default function DashboardPosts() {
   const { currentUser } = useSelector((state) => state.user);
   const [userPosts, setUserPosts] = useState([]);
   const [showMore, setShowMore] = useState(true);
+  const [showModal, setShowModal] = useState(false);
+  const [postIdForDelete, setPostIdForDelete] = useState("");
 
   const handleShowMore = async () => {
     const startIndex = userPosts.length;
@@ -23,6 +26,28 @@ export default function DashboardPosts() {
       }
     } catch (error) {
       console.log(error.message);
+    }
+  };
+
+  const handleDeletePost = async () => {
+    setShowModal(false);
+    try {
+      const res = await fetch(
+        `/api/post/deletepost/${postIdForDelete}/${currentUser._id}`,
+        {
+          method: "DELETE",
+        }
+      );
+      const data = await res.json();
+      if (!res.ok) {
+        console.log(data.message);
+      } else {
+        setUserPosts((prev) =>
+          prev.filter((post) => post._id !== postIdForDelete)
+        );
+      }
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -43,7 +68,7 @@ export default function DashboardPosts() {
     }
   }, [currentUser._id]);
   return (
-    <div className=' w-full table-auto overflow-x-scroll md:mx-auto p-3 scrollbar scrollbar-track-slate-100 scrollbar-thumb-slate-300 dark:scrollbar-track-slate-700 dark:scrollbar-thumb-slate-500'>
+    <div className=" w-full table-auto overflow-x-scroll md:mx-auto p-3 scrollbar scrollbar-track-slate-100 scrollbar-thumb-slate-300 dark:scrollbar-track-slate-700 dark:scrollbar-thumb-slate-500">
       {currentUser.isAdmin && userPosts.length > 0 ? (
         <>
           <Table hoverable className="shadow-md ">
@@ -73,14 +98,29 @@ export default function DashboardPosts() {
                     </Link>
                   </Table.Cell>
                   <Table.Cell>
-                    <Link className="font-semibold text-gray-900 dark:text-white" to={`/post/${post.slug}`}>{post.title}</Link>
+                    <Link
+                      className="font-semibold text-gray-900 dark:text-white"
+                      to={`/post/${post.slug}`}
+                    >
+                      {post.title}
+                    </Link>
                   </Table.Cell>
                   <Table.Cell>{post.category}</Table.Cell>
                   <Table.Cell>
-                    <span className="font-medium text-red-500 hover:underline cursor-pointer">Delete</span>
+                    <span
+                      className="font-medium text-red-500 hover:underline cursor-pointer"
+                      onClick={() => {
+                        setShowModal(true), setPostIdForDelete(post._id);
+                      }}
+                    >
+                      Delete
+                    </span>
                   </Table.Cell>
                   <Table.Cell>
-                    <Link className="font-medium text-teal-500 hover:underline" to={`/update-post/${post._id}`}>
+                    <Link
+                      className="font-medium text-teal-500 hover:underline"
+                      to={`/update-post/${post._id}`}
+                    >
                       <span>Edit</span>
                     </Link>
                   </Table.Cell>
@@ -91,7 +131,7 @@ export default function DashboardPosts() {
           {showMore && (
             <button
               onClick={handleShowMore}
-              className='w-full text-teal-500 self-center text-sm py-7'
+              className="w-full text-teal-500 self-center text-sm py-7"
             >
               Show more
             </button>
@@ -100,6 +140,35 @@ export default function DashboardPosts() {
       ) : (
         <p>No posts yet.</p>
       )}
+      <Modal
+        show={showModal}
+        onClose={() => setShowModal(false)}
+        popup
+        size="md"
+      >
+        <Modal.Header />
+        <Modal.Body>
+          <div className="text-center">
+            <HiOutlineExclamationCircle className="h-14 w-14 text-gray-400 dark:text-gray-200 mb-4 mx-auto" />
+            <h3 className="mb-5 text-lg text-gray-500 dark:text-gray-400">
+              {" "}
+              Do you want delete your post?
+            </h3>
+            <div className="flex justify-center gap-5">
+              <Button className="" color="failure" onClick={handleDeletePost}>
+                Delete
+              </Button>
+              <Button
+                className=""
+                color="gray"
+                onClick={() => setShowModal(false)}
+              >
+                Cancel
+              </Button>
+            </div>
+          </div>
+        </Modal.Body>
+      </Modal>
     </div>
   );
 }

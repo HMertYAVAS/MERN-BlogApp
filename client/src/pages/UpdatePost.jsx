@@ -33,16 +33,20 @@ export default function UpdatePost() {
         if (!res.ok) {
           console.log(data.message);
           setPublishError(data.message);
-        } else {
+          return;
+        }
+        if (res.ok) {
           setPublishError(null);
           setFormData(data.posts[0]);
         }
       };
+
       fetchPost();
     } catch (error) {
       console.log(error.message);
     }
   }, [postId]);
+
 
   const handleUploadImage = async () => {
     try {
@@ -80,17 +84,15 @@ export default function UpdatePost() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    console.log(formData)
     try {
-      const res = await fetch(
-        `/api/post/updatepost/${formData._id}/${currentUser._id}`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(formData),
-        }
-      );
+      const res = await fetch(`/api/post/updatepost/${postId}/${currentUser._id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
       const data = await res.json();
       if (!res.ok) {
         setPublishError(data.message);
@@ -102,9 +104,10 @@ export default function UpdatePost() {
         navigate(`/post/${data.slug}`);
       }
     } catch (error) {
-      setPublishError("Something went wrong");
+      setPublishError('Something went wrong');
     }
   };
+
 
   return (
     <div className="p-3 max-w-3xl mx-auto min-h-screen">

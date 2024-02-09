@@ -2,7 +2,7 @@ import { Link, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { Button, Spinner } from "flowbite-react";
 import CallToAction from "./CallToAction";
-import CommentSection from "../components/CommentSection";
+import CommentSection from "../components/Comment/CommentSection";
 
 export default function PostPage() {
   const { postSlug } = useParams();
@@ -68,7 +68,7 @@ export default function PostPage() {
           <div className="max-w-4xl mx-auto w-full py-7">
             <CallToAction />
           </div>
-          <CommentSection postId = {post._id}/>
+          <CommentSection postId = {post._id} />
         </main>
       )}
     </>

@@ -2,7 +2,7 @@ import React from "react";
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Sidebar } from "flowbite-react";
-import { GoPerson, GoSignOut, GoBook,GoPeople } from "react-icons/go";
+import { GoPerson, GoSignOut, GoBook, GoPeople, GoComment } from "react-icons/go";
 import { signoutSuccess } from "../../redux/user/userSlice";
 import { useDispatch, useSelector } from "react-redux";
 export default function DashboardSidebar() {
@@ -69,6 +69,18 @@ export default function DashboardSidebar() {
                   as={"div"}
                 >
                   Posts
+                </Sidebar.Item>
+              </Link>
+            )}
+            {currentUser.isAdmin && (
+              <Link to={"/dashboard?tab=comments"}>
+                <Sidebar.Item
+                  active={tab === "comments"}
+                  icon={GoComment}
+                  labelColor={"dark"}
+                  as={"div"}
+                >
+                  Comments
                 </Sidebar.Item>
               </Link>
             )}

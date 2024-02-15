@@ -12,6 +12,9 @@ body{
 
 .post-content p{
     margin-bottom: 0.5rem;
+    
+    /* Its text-gray-500 */
+    color: rgb(107 114 128);
 }
 
 .post-content h1{

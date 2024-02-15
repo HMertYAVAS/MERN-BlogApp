@@ -136,7 +136,7 @@ export default function SearchTerm() {
               <option value='hardware'>Hardware</option>
             </Select>
           </div>
-          <Button type='submit' outline gradientDuoTone='purpleToPink'>
+          <Button type='submit' outline className='bg-gradient-to-r from-red-600 via-orange-400 to-yellow-300'>
             Apply Filters
           </Button>
         </form>

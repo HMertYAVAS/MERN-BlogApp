@@ -17,25 +17,45 @@ import { useSelector, useDispatch } from "react-redux";
 import { toggleTheme } from "../../redux/theme/themeSlice.js";
 import { signoutSuccess } from "../../redux/user/userSlice.js";
 import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
 
 export default function Header() {
   const path = useLocation().pathname;
+  const location = useLocation();
   const { currentUser } = useSelector((state) => state.user);
   const { theme } = useSelector((state) => state.theme);
+  const [searchTerm, setSearchTerm] = useState('')
   const dispatch = useDispatch();
   const navigate = useNavigate()
+
+  useEffect(() => {
+    const urlParams = new URLSearchParams(location.search);
+    const searchTermFromUrl = urlParams.get('searchTerm');
+    if (searchTermFromUrl) {
+      setSearchTerm(searchTermFromUrl);
+    }
+  }, [location.search]);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const urlParams = new URLSearchParams(location.search);
+    urlParams.set('searchTerm', searchTerm);
+    const searchQuery = urlParams.toString();
+    navigate(`/search?${searchQuery}`);
+  };
+
 
   const handleLogout = async () => {
     navigate('/')
     try {
-      const res = await fetch('api/user/signout',{
-        method:'POST',
+      const res = await fetch('api/user/signout', {
+        method: 'POST',
       })
       console.log(res)
       const data = await res.json()
-      if(!res.ok){
+      if (!res.ok) {
         console.log(data.message)
-      }else{
+      } else {
         dispatch(signoutSuccess())
       }
     } catch (error) {
@@ -56,12 +76,14 @@ export default function Header() {
       </Link>
 
       {/* Search Bar */}
-      <form>
+      <form onSubmit={handleSubmit}>
         <TextInput
           type="text"
           placeholder="Search..."
           rightIcon={AiOutlineSearch}
           className="hidden lg:inline"
+          onChange={(e) => setSearchTerm(e.target.value)}
+          value={searchTerm}
         />
       </form>
       <Button className="lg:hidden w-12 h-10" color="gray">
@@ -78,7 +100,7 @@ export default function Header() {
           pill
           onClick={() => dispatch(toggleTheme())}
         >
-          {theme === "light" ? <FaMoon  /> : <FaSun /> }
+          {theme === "light" ? <FaMoon /> : <FaSun />}
         </Button>
 
         {currentUser ? (
@@ -101,6 +123,31 @@ export default function Header() {
               <DropdownItem>Profile</DropdownItem>
             </Link>
             <DropdownDivider />
+            {currentUser.isAdmin && (
+              <Link to={"/dashboard?tab=dashboard"}>
+                <DropdownItem>Dashboard</DropdownItem>
+              </Link>
+            )}
+            <DropdownDivider />
+            {currentUser.isAdmin && (
+              <Link to={"/dashboard?tab=users"}>
+                <DropdownItem>Users</DropdownItem>
+              </Link>
+            )}
+            <DropdownDivider />
+            {currentUser.isAdmin && (
+              <Link to={"/dashboard?tab=posts"}>
+                <DropdownItem>Posts</DropdownItem>
+              </Link>
+            )}
+            <DropdownDivider />
+            {currentUser.isAdmin && (
+              <Link to={"/dashboard?tab=comments"}>
+                <DropdownItem>Comments</DropdownItem>
+              </Link>
+            )}
+            <DropdownDivider />
+
             <DropdownItem onClick={handleLogout} >Log Out</DropdownItem>
           </Dropdown>
         ) : (

@@ -13,7 +13,10 @@ export default function PostCards({ post }) {
           </Link>
           <div className='p-3 flex flex-col gap-2'>
             <p className='text-lg font-semibold line-clamp-2'>{post.title}</p>
+            <div className=' flex justify-between'>
             <span className='italic text-sm'>{post.category}</span>
+            <span className='text-sm'>{new Date(post.createdAt).toLocaleDateString()}</span>
+            </div>
             <Link
               to={`/post/${post.slug}`}
               className='z-10 group-hover:bottom-0 absolute bottom-[-200px] left-0 right-0 border border-orange-500 text-orange-500 hover:bg-orange-400 hover:text-white transition-all duration-300 text-center py-2 rounded-md !rounded-tl-none m-2'

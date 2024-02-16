@@ -124,29 +124,38 @@ export default function Header() {
             </Link>
             <DropdownDivider />
             {currentUser.isAdmin && (
-              <Link to={"/dashboard?tab=dashboard"}>
-                <DropdownItem>Dashboard</DropdownItem>
-              </Link>
-            )}
-            <DropdownDivider />
+              <>
+                <Link to={"/dashboard?tab=dashboard"}>
+                  <DropdownItem>Dashboard</DropdownItem>
+                </Link>
+                <DropdownDivider />
+              </>
+            )
+            }
             {currentUser.isAdmin && (
-              <Link to={"/dashboard?tab=users"}>
-                <DropdownItem>Users</DropdownItem>
-              </Link>
+              <>
+                <Link to={"/dashboard?tab=users"}>
+                  <DropdownItem>Users</DropdownItem>
+                </Link>
+                <DropdownDivider />
+              </>
             )}
-            <DropdownDivider />
             {currentUser.isAdmin && (
-              <Link to={"/dashboard?tab=posts"}>
-                <DropdownItem>Posts</DropdownItem>
-              </Link>
+              <>
+                <Link to={"/dashboard?tab=posts"}>
+                  <DropdownItem>Posts</DropdownItem>
+                </Link>
+                <DropdownDivider />
+              </>
             )}
-            <DropdownDivider />
             {currentUser.isAdmin && (
-              <Link to={"/dashboard?tab=comments"}>
-                <DropdownItem>Comments</DropdownItem>
-              </Link>
+              <>
+                <Link to={"/dashboard?tab=comments"}>
+                  <DropdownItem>Comments</DropdownItem>
+                </Link>
+                <DropdownDivider />
+              </>
             )}
-            <DropdownDivider />
 
             <DropdownItem onClick={handleLogout} >Log Out</DropdownItem>
           </Dropdown>

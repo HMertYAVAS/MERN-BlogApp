@@ -125,6 +125,10 @@ export default function DashboardProfile() {
     }
   };
 
+  useEffect(()=>{
+    setFormData({...formData,username:currentUser.username,email:currentUser.email})
+  },[currentUser])
+
   useEffect(() => {
     if (imageFile) {
       uploadImage();
@@ -204,9 +208,8 @@ export default function DashboardProfile() {
                   left: 0,
                 },
                 path: {
-                  stroke: `rgba(62, 152, 199, ${
-                    imageFileUploadProgress / 100
-                  })`,
+                  stroke: `rgba(62, 152, 199, ${imageFileUploadProgress / 100
+                    })`,
                 },
               }}
             />
@@ -214,11 +217,10 @@ export default function DashboardProfile() {
           <img
             src={imageFileUrl || currentUser.profilePicture}
             alt="photo"
-            className={`rounded-full w-full h-full object-cover border-8 border-[lightgray] ${
-              imageFileUploadProgress &&
+            className={`rounded-full w-full h-full object-cover border-8 border-[lightgray] ${imageFileUploadProgress &&
               imageFileUploadProgress < 100 &&
               "opacity-60"
-            }`}
+              }`}
           />
         </div>
         {imageFileUploadError && (

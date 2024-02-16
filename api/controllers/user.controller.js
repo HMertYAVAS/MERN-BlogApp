@@ -11,18 +11,29 @@ export const updateUser = async (req, res, next) => {
     return next(errorHandler(403, "You are not allowed to update this user"));
   }
 
-  if (req.body.password) {
+  if (req.body.password !== undefined && req.body.password !== null && req.body.password !== '' ) {
+    // Check if the length of the password is less than 6 characters
     if (req.body.password.length < 6) {
+      // Return an error if the password length is insufficient
       return next(errorHandler(400, "Password must be at least 6 characters"));
     }
+    // Hash the password using bcryptjs with a salt round of 10
     req.body.password = bcryptjs.hashSync(req.body.password, 10);
+  } else {
+    // If the password field is empty or null, remove it from the request body
+    delete req.body.password;
+    return next(errorHandler(400, "Password can't be null"));
   }
-  if (req.body.username) {
-    if (req.body.username.length < 7 || req.body.username.length > 20) {
+
+   
+    
+
+  if (req.body.username !== undefined && req.body.username !== null && req.body.username !== '') {
+/*     if (req.body.username.length < 7 || req.body.username.length > 20) {
       return next(
         errorHandler(400, "Username must be between 7 and 20 characters")
       );
-    }
+    } */
     if (req.body.username.includes(" ")) {
       return next(errorHandler(400, "Username cannot contain spaces"));
     }
@@ -34,7 +45,21 @@ export const updateUser = async (req, res, next) => {
         errorHandler(400, "Username can only contain letters and numbers")
       );
     }
+  } else {
+    // Handle case where username is null or empty
+    return next(errorHandler(400, "Username can't be null"));
   }
+  
+  if(req.body.email !== undefined && req.body.email !== null && req.body.email !== ''){
+    if(!req.body.email.includes('@') || !req.body.email.includes('.') ){
+      return next(errorHandler(400, "Email is required"));
+    }
+  }else{
+    return next(errorHandler(400, "Email can't be null"));
+
+  }
+
+
 
   try {
     const updatedUser = await User.findByIdAndUpdate(req.params.userId, {
